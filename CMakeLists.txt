@@ -50,6 +50,7 @@ SET (VALA_INPUT
      rygel-lms-artist.vala
      rygel-lms-category-container.vala
      rygel-lms-database.vala
+     rygel-lms-dbus-interfaces.vala
      rygel-lms-genres.vala
      rygel-lms-genre.vala
      rygel-lms-image-root.vala
