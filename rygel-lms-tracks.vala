@@ -24,7 +24,25 @@ using Rygel;
 using Sqlite;
 
 public class Rygel.LMS.Tracks : Rygel.LMS.CategoryContainer {
-    private static const string SQL_ALL_TEMPLATE = 
+    private static const string SQL_ADDED_TEMPLATE =
+        "SELECT files.id, files.path, files.size, " +
+               "audios.title as title, audios.trackno, audios.length, audios.channels, audios.sampling_rate, audios.bitrate, audios.dlna_profile, audios.dlna_mime, " +
+               "audio_artists.name as artist, " +
+               "audio_albums.name, " +
+               "audio_genres.name, " +
+               "audio_albums.album_art_url " +
+        "FROM audios, files " +
+        "LEFT JOIN audio_artists " +
+        "ON audios.artist_id = audio_artists.id " +
+        "LEFT JOIN audio_albums " +
+        "ON audios.album_id = audio_albums.id " +
+        "LEFT JOIN audio_genres " +
+        "ON audios.genre_id = audio_genres.id " +
+        "WHERE audios.id = files.id" +
+        "AND update_id > ? AND update_id <= ? " +
+        " %s;";
+
+    private static const string SQL_ALL_TEMPLATE =
         "SELECT files.id, files.path, files.size, " +
                "audios.title as title, audios.trackno, audios.length, audios.channels, audios.sampling_rate, audios.bitrate, audios.dlna_profile, audios.dlna_mime, " +
                "audio_artists.name as artist, " +
@@ -125,6 +143,13 @@ public class Rygel.LMS.Tracks : Rygel.LMS.CategoryContainer {
         return song;
     }
 
+    private static string get_sql_added (string db_id) {
+        return (SQL_ADDED_TEMPLATE.printf (db_id));
+    }
+    private static string get_sql_removed (string db_id) {
+        return "";//(SQL_REMOVED_TEMPLATE.printf (db_id));
+    }
+
     private static string get_sql_all (string query_ext) {
         debug ("QUERY: %s", SQL_ALL_TEMPLATE.printf (query_ext));
         return (SQL_ALL_TEMPLATE.printf (query_ext));
@@ -162,7 +187,9 @@ public class Rygel.LMS.Tracks : Rygel.LMS.CategoryContainer {
               lms_db,
               get_sql_all (query_ext),
               SQL_FIND_OBJECT,
-              get_sql_count (query_ext));
+              get_sql_count (query_ext),
+              get_sql_added (id),
+              null);
 
     }
 }

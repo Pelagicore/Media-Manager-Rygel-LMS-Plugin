@@ -94,6 +94,8 @@ public class Rygel.LMS.Genres : Rygel.LMS.CategoryContainer {
               lms_db,
               Genres.SQL_ALL,
               Genres.SQL_FIND_OBJECT,
-              Genres.SQL_COUNT);
+              Genres.SQL_COUNT,
+              null,
+              null);
     }
 }

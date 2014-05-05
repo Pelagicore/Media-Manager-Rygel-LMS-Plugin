@@ -69,7 +69,9 @@ public class Rygel.LMS.Artist : Rygel.LMS.CategoryContainer {
               lms_db,
               get_sql_all (id),
               get_sql_find_object (id),
-              get_sql_count (id));
+              get_sql_count (id),
+              null,
+              null);
 
         artist_name = title;
         upnp_class = MediaContainer.MUSIC_ARTIST;
