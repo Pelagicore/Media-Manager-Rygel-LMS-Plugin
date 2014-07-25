@@ -97,6 +97,8 @@ public class Rygel.LMS.Playlists : Rygel.WritableContainer,
     public Playlists (string id, MediaContainer parent, string name) {
         base (id, parent, name);
 
+        upnp_class = MediaContainer.PLAYLIST;
+
         this.create_classes = new ArrayList<string>();
         this.create_classes.add (Rygel.MusicItem.UPNP_CLASS);
         this.create_classes.add (Rygel.MediaContainer.UPNP_CLASS);

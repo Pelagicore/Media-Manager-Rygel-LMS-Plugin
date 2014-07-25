@@ -166,6 +166,8 @@ public class Rygel.LMS.GenreTracks : Rygel.LMS.Tracks {
               "Tracks",
               lms_db,
               " AND audio_genres.name = '%s' ".printf(genre));
+
+        upnp_class = MediaContainer.MUSIC_GENRE;
     }
 
 }
