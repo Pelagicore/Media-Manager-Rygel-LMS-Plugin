@@ -8,6 +8,8 @@ public class Rygel.LMS.Album : Rygel.LMS.Tracks {
               title,
               lms_db,
               " AND audios.album_id = %s ".printf(id));
+
+        upnp_class = MediaContainer.MUSIC_ALBUM;
     }
 
 }
