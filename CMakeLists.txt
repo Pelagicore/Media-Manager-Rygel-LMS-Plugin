@@ -12,16 +12,23 @@
 CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
 PROJECT (LIBRYGEL_LMS)
 
+SET(RYGEL_VERSION 2.0)
+
 FIND_PACKAGE (PkgConfig)
 pkg_check_modules (PC_GLIB           REQUIRED glib-2.0)
-pkg_check_modules (PC_RYGEL_SERVER   REQUIRED rygel-server-2.4)
-pkg_check_modules (PC_RYGEL_CORE     REQUIRED rygel-core-2.4)
+pkg_check_modules (PC_RYGEL_SERVER   REQUIRED rygel-server-${RYGEL_VERSION})
+pkg_check_modules (PC_RYGEL_CORE     REQUIRED rygel-core-${RYGEL_VERSION})
 pkg_check_modules (PC_SQLITE3        REQUIRED sqlite3)
+pkg_check_modules (PC_GUPNP          REQUIRED gupnp-1.0)
 
 SET (VALA_PACKAGES
-     --pkg rygel-server-2.4
-     --pkg rygel-core-2.4
-     --pkg sqlite3)
+     --pkg rygel-server-${RYGEL_VERSION}
+     --pkg rygel-core-${RYGEL_VERSION}
+     --pkg sqlite3
+     --pkg gupnp-1.0
+     --pkg libsoup-2.4
+     --pkg gssdp-1.0
+     )
 
 SET (VALA_FLAGS
      -C)
@@ -32,9 +39,6 @@ SET (VAPIDIR /home/jonatan/rygel_install_new/share/vala/vapi)
 
 SET (CONFIG_H
      -DGETTEXT_PACKAGE="rygel")
-
-SET (VALA_DEFINES
-    -D rygel_lms_utf8_collate_str)
 
 SET (VALA_INPUT
      rygel-lms-albums.vala
@@ -77,22 +81,36 @@ ADD_CUSTOM_COMMAND (OUTPUT ${C_SOURCES}
                             ${VALA_FLAGS}
                             ${VALA_PACKAGES}
                             --vapidir=${VAPIDIR}
-                            ${VALA_DEFINES}
+                            --vapidir=${CMAKE_CURRENT_SOURCE_DIR}/vapi
                             ${VALA_SOURCES})
 
 INCLUDE_DIRECTORIES (${PC_GLIB_INCLUDE_DIRS}
                      ${PC_RYGEL_SERVER_INCLUDE_DIRS}
-                     ${PC_SQLITE3}
+                     ${PC_SQLITE3_INCLUDE_DIRS}
+                     ${PC_GUPNP_INCLUDE_DIRS}
                      ${PC_RYGEL_CORE_INCLUDE_DIRS})
 
 LINK_DIRECTORIES (${PC_RYGEL_SERVER_LIBRARY_DIRS}
-                  ${PC_RYGEL_CORE_LIBRARY_DIRS})
+                  ${PC_RYGEL_CORE_LIBRARY_DIRS}
+                  ${PC_GUPNP_LIBRARY_DIRS}
+                  )
 
 ADD_DEFINITIONS (${CONFIG_H})
 
-ADD_LIBRARY (rygel-lms SHARED ${C_SOURCES} ${ADDITIONAL_SOURCES})
+ADD_LIBRARY (rygel-mm-lms SHARED ${C_SOURCES} ${ADDITIONAL_SOURCES})
 
-TARGET_LINK_LIBRARIES (rygel-lms ${PC_GLIB_LIBRARIES}
+TARGET_LINK_LIBRARIES (rygel-mm-lms ${PC_GLIB_LIBRARIES}
                                     ${PC_RYGEL_SERVER_LIBRARIES}
-                                    ${PC_SQLITE3}
+                                    ${PC_SQLITE3_SERVER_LIBRARIES}
+                                    ${PC_GUPNP_LIBRARIES}
                                     ${PC_RYGEL_CORE_LIBRARIES})
+
+INSTALL(TARGETS rygel-mm-lms
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib/rygel-${RYGEL_VERSION}/plugins/
+  ARCHIVE DESTINATION lib/rygel-${RYGEL_VERSION}/plugins/
+)
+
+INSTALL(FILES mm-lms.plugin
+  DESTINATION lib/rygel-${RYGEL_VERSION}/plugins/)
+

@@ -23,7 +23,7 @@
 using Rygel;
 
 public class Rygel.LMS.Plugin : Rygel.MediaServerPlugin {
-    public const string NAME = "LMS";
+    public const string NAME = "MM-LMS";
 
     private static RootContainer root;
 
