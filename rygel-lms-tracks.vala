@@ -75,17 +75,30 @@ public class Rygel.LMS.Tracks : Rygel.LMS.CategoryContainer {
         "ON audios.genre_id = audio_genres.id " +
         "WHERE files.id = ? AND audios.id = files.id;";
 
+    private string guessDLNAMime (string path) {
+        if (path.down().has_suffix ("ogg")) {
+            return "audio/ogg";
+        } else if (path.down().has_suffix ("mp3")) {
+            return "audio/mpeg";
+        }
+
+        /* Just guess something */
+        return "audio/mpeg";
+    }
+
     protected override MediaObject? object_from_statement (Statement statement) {
         var id = statement.column_int (0);
         var path = statement.column_text (1);
         var mime_type = statement.column_text(10);
 
         if (mime_type == null || mime_type.length == 0) {
-            /* TODO is this correct? */
-            debug ("Skipping music item %d (%s) with no MIME type",
+            var mime = guessDLNAMime (path);
+
+            debug ("Guessing mime for music item %d (%s): %s",
                    id,
-                   path);
-            return null;
+                   path,
+                   mime);
+            mime_type = mime;
         }
 
         var title = statement.column_text(3);

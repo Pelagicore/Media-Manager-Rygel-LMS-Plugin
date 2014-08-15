@@ -9,8 +9,8 @@ Source0:    %{name}-%{version}.tar.bz2
 
 BuildRequires: pkgconfig(sqlite3)
 BuildRequires: pkgconfig(glib-2.0)
-BuildRequires: pkgconfig(rygel-server-2.0)
-BuildRequires: pkgconfig(rygel-core-2.0)
+BuildRequires: pkgconfig(rygel-server-2.2)
+BuildRequires: pkgconfig(rygel-core-2.2)
 BuildRequires: gupnp
 BuildRequires: gupnp-av
 BuildRequires: libdbus
@@ -45,5 +45,5 @@ cd build
 %make_install
 
 %files
-/usr/lib/rygel-2.0/plugins/librygel-mm-lms.so
-/usr/lib/rygel-2.0/plugins/mm-lms.plugin
+/usr/lib/rygel-2.2/plugins/librygel-mm-lms.so
+/usr/lib/rygel-2.2/plugins/mm-lms.plugin
