@@ -1,0 +1,7 @@
+[Plugin]
+Version = 0.1
+Module = mm-lms
+Name = MM-LMS
+License = LGPL
+Description = LMS DMS plugin for Rygel, with GENIVI MediaManager adaptations
+Copyright = Copyright © Intel, additions by Jaguar & Pelagicore
