@@ -109,7 +109,7 @@ public class Rygel.LMS.Tracks : Rygel.LMS.CategoryContainer {
         song.track_number = statement.column_int(4);
         song.duration = statement.column_int(5);
         song.channels = statement.column_int(6);
-        song.sample_freq = statement.column_int(7); 
+        song.sample_freq = statement.column_int(7);
         song.bitrate = statement.column_int(8);
         song.dlna_profile = statement.column_text(9);
         song.mime_type = mime_type;
