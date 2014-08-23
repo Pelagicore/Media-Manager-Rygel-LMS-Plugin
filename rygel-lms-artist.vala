@@ -55,7 +55,7 @@ public class Rygel.LMS.Artist : Rygel.LMS.CategoryContainer {
     protected override MediaObject? object_from_statement (Statement statement) {
         var db_id = "%d".printf (statement.column_int (0));
         var title = statement.column_text (1);
-        return new LMS.Album (db_id, this, title, artist_name, this.lms_db);
+        return new LMS.Album (db_id, this, title, artist_name, "rygellms-artist.vala:58", this.lms_db);
     }
 
     public Artist (string         id,

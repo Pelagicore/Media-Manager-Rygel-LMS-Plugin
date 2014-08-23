@@ -29,7 +29,8 @@ public class Rygel.LMS.Tracks : Rygel.LMS.CategoryContainer {
                "audios.title as title, audios.trackno, audios.length, audios.channels, audios.sampling_rate, audios.bitrate, audios.dlna_profile, audios.dlna_mime, " +
                "audio_artists.name as artist, " +
                "audio_albums.name, " +
-               "audio_genres.name " +
+               "audio_genres.name, " +
+               "audio_albums.album_art_url " +
         "FROM audios, files " +
         "LEFT JOIN audio_artists " +
         "ON audios.artist_id = audio_artists.id " +
@@ -65,7 +66,8 @@ public class Rygel.LMS.Tracks : Rygel.LMS.CategoryContainer {
                "audios.title, audios.trackno, audios.length, audios.channels, audios.sampling_rate, audios.bitrate, audios.dlna_profile, audios.dlna_mime, " + 
                "audio_artists.name, " +
                "audio_albums.name, " +
-               "audio_genres.name " +
+               "audio_genres.name, " +
+               "audio_albums.album_art_url " +
         "FROM audios, files " +
         "LEFT JOIN audio_artists " +
         "ON audios.artist_id = audio_artists.id " +
@@ -116,6 +118,7 @@ public class Rygel.LMS.Tracks : Rygel.LMS.CategoryContainer {
         song.artist = statement.column_text(11);
         song.album = statement.column_text(12);
         song.genre = statement.column_text(13);
+        //song.album_art_uri = statement.column_text(14);
         File file = File.new_for_path (path);
         song.add_uri (file.get_uri ());
 

@@ -26,7 +26,7 @@ using Sqlite;
 public class Rygel.LMS.Albums : Rygel.LMS.CategoryContainer {
     private static const string SQL_ALL =
         "SELECT audio_albums.id, audio_albums.name as title, " +
-               "audio_artists.name as artist " +
+               "audio_artists.name as artist, audio_albums.album_art_url " +
         "FROM audio_albums " +
         "LEFT JOIN audio_artists " +
         "ON audio_albums.artist_id = audio_artists.id " +
@@ -34,7 +34,7 @@ public class Rygel.LMS.Albums : Rygel.LMS.CategoryContainer {
 
     private static const string SQL_ALL_WITH_FILTER_TEMPLATE =
         "SELECT audio_albums.id, audio_albums.name as title, " +
-               "audio_artists.name as artist " +
+               "audio_artists.name as artist, audio_albums.album_art_url " +
         "FROM audio_albums " +
         "LEFT JOIN audio_artists " +
         "ON audio_albums.artist_id = audio_artists.id " +
@@ -47,7 +47,7 @@ public class Rygel.LMS.Albums : Rygel.LMS.CategoryContainer {
 
     private static const string SQL_COUNT_WITH_FILTER_TEMPLATE =
         "SELECT COUNT(audio_albums.id), audio_albums.name as title, " +
-               "audio_artists.name as artist " +
+               "audio_artists.name as artist, audio_albums.album_art_url " +
         "FROM audio_albums " +
         "LEFT JOIN audio_artists " +
         "ON audio_albums.artist_id = audio_artists.id " +
@@ -76,7 +76,7 @@ public class Rygel.LMS.Albums : Rygel.LMS.CategoryContainer {
 
 
     private static const string SQL_FIND_OBJECT =
-        "SELECT audio_albums.id, audio_albums.name, audio_artists.name " +
+        "SELECT audio_albums.id, audio_albums.name, audio_artists.name, audio_albums.album_art_url " +
         "FROM audio_albums " +
         "LEFT JOIN audio_artists " +
         "ON audio_albums.artist_id = audio_artists.id " +
@@ -140,7 +140,8 @@ public class Rygel.LMS.Albums : Rygel.LMS.CategoryContainer {
             var stmt = this.lms_db.prepare_and_init (query, args.values);
             while (Database.get_children_step (stmt)) {
                 var album_id = stmt.column_text (13);
-                var album = new Album (album_id, this, "", "", this.lms_db);
+                var album = new Album (album_id, this, "", "", "rygel-lms-albums.vala:143", this.lms_db);
+                album.album_art_uri = "BANANA!";
 
                 var song = album.object_from_statement (stmt);
                 song.parent_ref = song.parent;
@@ -159,8 +160,8 @@ public class Rygel.LMS.Albums : Rygel.LMS.CategoryContainer {
                                          this,
                                          statement.column_text (1),
                                          statement.column_text (2),
+                                         statement.column_text (3),
                                          this.lms_db);
-        album.album_art_uri = "file:///Set from LMS";
         return album;
     }
 

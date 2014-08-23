@@ -3,6 +3,7 @@ public class Rygel.LMS.Album : Rygel.LMS.Tracks {
                   MediaContainer parent,
                   string         title,
                   string         artist_,
+                  string         album_art_uri_,
                   LMS.Database   lms_db) {
         base (id,
               parent,
@@ -12,6 +13,7 @@ public class Rygel.LMS.Album : Rygel.LMS.Tracks {
 
         upnp_class = MediaContainer.MUSIC_ALBUM;
         artist = artist_;
+        album_art_uri = album_art_uri_;
     }
 
 }
