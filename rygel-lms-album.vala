@@ -13,7 +13,7 @@ public class Rygel.LMS.Album : Rygel.LMS.Tracks {
 
         upnp_class = MediaContainer.MUSIC_ALBUM;
         artist = artist_;
-        album_art_uri = album_art_uri_;
+        this.set_album_art_uri(album_art_uri_);
     }
 
 }

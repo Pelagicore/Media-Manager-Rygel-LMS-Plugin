@@ -136,7 +136,10 @@ public class Rygel.LMS.Tracks : Rygel.LMS.CategoryContainer {
         song.artist = statement.column_text(11);
         song.album = statement.column_text(12);
         song.genre = statement.column_text(13);
-        //song.album_art_uri = statement.column_text(14);
+
+        File album_art = File.new_for_path (statement.column_text(14));
+        song.set_album_art_uri(album_art.get_uri());
+
         File file = File.new_for_path (path);
         song.add_uri (file.get_uri ());
 

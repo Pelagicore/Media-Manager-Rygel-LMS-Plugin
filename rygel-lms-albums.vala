@@ -141,7 +141,7 @@ public class Rygel.LMS.Albums : Rygel.LMS.CategoryContainer {
             while (Database.get_children_step (stmt)) {
                 var album_id = stmt.column_text (13);
                 var album = new Album (album_id, this, "", "", "rygel-lms-albums.vala:143", this.lms_db);
-                album.album_art_uri = "BANANA!";
+                album.set_album_art_uri ("BANANA!");
 
                 var song = album.object_from_statement (stmt);
                 song.parent_ref = song.parent;
@@ -156,11 +156,12 @@ public class Rygel.LMS.Albums : Rygel.LMS.CategoryContainer {
 
     protected override MediaObject? object_from_statement (Statement statement) {
         var id = "%d".printf (statement.column_int (0));
+        var album_art = File.new_for_path (statement.column_text (3));
         LMS.Album album = new LMS.Album (id,
                                          this,
                                          statement.column_text (1),
                                          statement.column_text (2),
-                                         statement.column_text (3),
+                                         album_art.get_uri(),
                                          this.lms_db);
         return album;
     }
