@@ -110,6 +110,7 @@ public class Rygel.LMS.Tracks : Rygel.LMS.CategoryContainer {
         var id = statement.column_int (0);
         var path = statement.column_text (1);
         var mime_type = statement.column_text(10);
+        var album_art_path = statement.column_text(14);
 
         if (mime_type == null || mime_type.length == 0) {
             var mime = guessDLNAMime (path);
@@ -137,8 +138,10 @@ public class Rygel.LMS.Tracks : Rygel.LMS.CategoryContainer {
         song.album = statement.column_text(12);
         song.genre = statement.column_text(13);
 
-        File album_art = File.new_for_path (statement.column_text(14));
-        song.set_album_art_uri(album_art.get_uri());
+        if (album_art_path != null) {
+            File album_art = File.new_for_path (album_art_path);
+            song.set_album_art_uri(album_art.get_uri());
+        }
 
         File file = File.new_for_path (path);
         song.add_uri (file.get_uri ());
