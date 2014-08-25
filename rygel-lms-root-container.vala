@@ -31,10 +31,7 @@ public class Rygel.LMS.RootContainer : Rygel.SimpleContainer {
     public RootContainer() {
         var config = MetaConfig.get_default ();
 
-        var title = _("GENIVI MediaManager");
-        try {
-            title = config.get_string ("LightMediaScanner", "title");
-        } catch (GLib.Error error) {}
+        var title = "GENIVI MediaManager";
 
         base.root(title);
 
