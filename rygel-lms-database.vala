@@ -80,7 +80,7 @@ public class Rygel.LMS.Database {
     }
 
     public Database (string db_path) throws DatabaseError {
-        Sqlite.Database.open (db_path, out this.db);
+        Sqlite.Database.open_v2 (db_path, out this.db, Sqlite.OPEN_READONLY);
         if (this.db.errcode () != Sqlite.OK) {
             throw new DatabaseError.OPEN ("Failed to open '%s': %d",
                                           db_path,

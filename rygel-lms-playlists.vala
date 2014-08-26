@@ -103,10 +103,10 @@ public class Rygel.LMS.Playlists : Rygel.WritableContainer,
         this.create_classes.add (Rygel.MusicItem.UPNP_CLASS);
         this.create_classes.add (Rygel.MediaContainer.UPNP_CLASS);
 
-        this.uris.add ("rygel-writable://playlist");
+        this.add_uri ("rygel-writable://playlist");
 
         var item = new MusicItem ("item", this, "Item", Rygel.MusicItem.UPNP_CLASS);
-        item.uris.add ("file:///");
+        item.add_uri ("file:///");
         item.mime_type = "audio/mpeg";
 
         this.add_child_item(item as MediaItem);
