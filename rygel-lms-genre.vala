@@ -97,7 +97,7 @@ public class Rygel.LMS.GenreArtist : Rygel.LMS.Artist {
     protected override MediaObject? object_from_statement (Statement statement) {
         var db_id = "%d".printf (statement.column_int (0));
         var title = statement.column_text (1);
-        return new LMS.GenreAlbum (db_id, this, title, this.lms_db, this.genreId);
+        return new LMS.GenreAlbum (db_id, this, title, title, this.lms_db, this.genreId);
     }
 
     public GenreArtist (string         id,
@@ -122,6 +122,7 @@ public class Rygel.GenreAlbums : Rygel.LMS.Albums {
         var album = new LMS.GenreAlbum (id,
                                         this,
                                         statement.column_text (1),
+                                        statement.column_text (2),
                                         this.lms_db,
                                         this.genreId);
         var count = album.count();
@@ -145,6 +146,7 @@ public class Rygel.LMS.GenreAlbum : Rygel.LMS.Tracks {
     public GenreAlbum (string id,
                        MediaContainer parent,
                        string         title,
+                       string         artist_name,
                        LMS.Database   lms_db,
                        string         genre) {
         base (id,
@@ -153,8 +155,10 @@ public class Rygel.LMS.GenreAlbum : Rygel.LMS.Tracks {
               lms_db,
               " AND audios.album_id = %s ".printf(id) +
               " AND audio_genres.name = '%s' ".printf(genre));
-    }
 
+        upnp_class = MediaContainer.MUSIC_ALBUM;
+        artist = artist_name;
+    }
 }
 
 public class Rygel.LMS.GenreTracks : Rygel.LMS.Tracks {

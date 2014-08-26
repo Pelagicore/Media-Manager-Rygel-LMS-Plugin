@@ -43,19 +43,13 @@ SET (CONFIG_H
 SET (VALA_INPUT
      rygel-lms-albums.vala
      rygel-lms-album.vala
-     rygel-lms-all-images.vala
-     rygel-lms-all-music.vala
-     rygel-lms-all-videos.vala
      rygel-lms-artists.vala
      rygel-lms-artist.vala
      rygel-lms-category-container.vala
      rygel-lms-database.vala
+     rygel-lms-dbus-interfaces.vala
      rygel-lms-genres.vala
      rygel-lms-genre.vala
-     rygel-lms-image-root.vala
-     rygel-lms-image-years.vala
-     rygel-lms-image-year.vala
-     rygel-lms-music-root.vala
      rygel-lms-playlists.vala
      rygel-lms-plugin-factory.vala
      rygel-lms-plugin.vala

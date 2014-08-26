@@ -24,6 +24,8 @@ using Rygel;
 using Sqlite;
 
 public class Rygel.LMS.Artist : Rygel.LMS.CategoryContainer {
+    private string artist_name = "Unknown";
+
     private static const string SQL_ALL_TEMPLATE =
         "SELECT audio_albums.id, audio_albums.name " +
         "FROM audio_albums " +
@@ -53,7 +55,7 @@ public class Rygel.LMS.Artist : Rygel.LMS.CategoryContainer {
     protected override MediaObject? object_from_statement (Statement statement) {
         var db_id = "%d".printf (statement.column_int (0));
         var title = statement.column_text (1);
-        return new LMS.Album (db_id, this, title, this.lms_db);
+        return new LMS.Album (db_id, this, title, artist_name, "rygellms-artist.vala:58", this.lms_db);
     }
 
     public Artist (string         id,
@@ -67,8 +69,11 @@ public class Rygel.LMS.Artist : Rygel.LMS.CategoryContainer {
               lms_db,
               get_sql_all (id),
               get_sql_find_object (id),
-              get_sql_count (id));
+              get_sql_count (id),
+              null,
+              null);
 
+        artist_name = title;
         upnp_class = MediaContainer.MUSIC_ARTIST;
     }
 }

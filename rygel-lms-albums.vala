@@ -26,7 +26,7 @@ using Sqlite;
 public class Rygel.LMS.Albums : Rygel.LMS.CategoryContainer {
     private static const string SQL_ALL =
         "SELECT audio_albums.id, audio_albums.name as title, " +
-               "audio_artists.name as artist " +
+               "audio_artists.name as artist, audio_albums.album_art_url " +
         "FROM audio_albums " +
         "LEFT JOIN audio_artists " +
         "ON audio_albums.artist_id = audio_artists.id " +
@@ -34,7 +34,7 @@ public class Rygel.LMS.Albums : Rygel.LMS.CategoryContainer {
 
     private static const string SQL_ALL_WITH_FILTER_TEMPLATE =
         "SELECT audio_albums.id, audio_albums.name as title, " +
-               "audio_artists.name as artist " +
+               "audio_artists.name as artist, audio_albums.album_art_url " +
         "FROM audio_albums " +
         "LEFT JOIN audio_artists " +
         "ON audio_albums.artist_id = audio_artists.id " +
@@ -47,7 +47,7 @@ public class Rygel.LMS.Albums : Rygel.LMS.CategoryContainer {
 
     private static const string SQL_COUNT_WITH_FILTER_TEMPLATE =
         "SELECT COUNT(audio_albums.id), audio_albums.name as title, " +
-               "audio_artists.name as artist " +
+               "audio_artists.name as artist, audio_albums.album_art_url " +
         "FROM audio_albums " +
         "LEFT JOIN audio_artists " +
         "ON audio_albums.artist_id = audio_artists.id " +
@@ -76,8 +76,10 @@ public class Rygel.LMS.Albums : Rygel.LMS.CategoryContainer {
 
 
     private static const string SQL_FIND_OBJECT =
-        "SELECT audio_albums.id, audio_albums.name " +
+        "SELECT audio_albums.id, audio_albums.name, audio_artists.name, audio_albums.album_art_url " +
         "FROM audio_albums " +
+        "LEFT JOIN audio_artists " +
+        "ON audio_albums.artist_id = audio_artists.id " +
         "WHERE audio_albums.id = ?;";
 
     protected override string get_sql_all_with_filter (string filter) {
@@ -138,12 +140,12 @@ public class Rygel.LMS.Albums : Rygel.LMS.CategoryContainer {
             var stmt = this.lms_db.prepare_and_init (query, args.values);
             while (Database.get_children_step (stmt)) {
                 var album_id = stmt.column_text (13);
-                var album = new Album (album_id, this, "", this.lms_db);
+                var album = new Album (album_id, this, "", "", "rygel-lms-albums.vala:143", this.lms_db);
+                album.set_album_art_uri ("BANANA!");
 
                 var song = album.object_from_statement (stmt);
                 song.parent_ref = song.parent;
                 children.add (song);
-                
             }
         } catch (DatabaseError e) {
             warning ("Query failed: %s", e.message);
@@ -154,9 +156,12 @@ public class Rygel.LMS.Albums : Rygel.LMS.CategoryContainer {
 
     protected override MediaObject? object_from_statement (Statement statement) {
         var id = "%d".printf (statement.column_int (0));
+        var album_art = File.new_for_path (statement.column_text (3));
         LMS.Album album = new LMS.Album (id,
                                          this,
                                          statement.column_text (1),
+                                         statement.column_text (2),
+                                         album_art.get_uri(),
                                          this.lms_db);
         return album;
     }
@@ -169,6 +174,8 @@ public class Rygel.LMS.Albums : Rygel.LMS.CategoryContainer {
               lms_db,
               Albums.SQL_ALL,
               Albums.SQL_FIND_OBJECT,
-              Albums.SQL_COUNT);
+              Albums.SQL_COUNT,
+              null,
+              null);
     }
 }

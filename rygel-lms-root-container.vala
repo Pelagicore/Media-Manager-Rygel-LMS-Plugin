@@ -38,18 +38,8 @@ public class Rygel.LMS.RootContainer : Rygel.SimpleContainer {
 
         base.root(title);
 
-        string db_path;
         try {
-            db_path = config.get_string ("LightMediaScanner", "db-path");
-            debug ("Using sqlite database location '%s'", db_path);
-        } catch (GLib.Error error) {
-            db_path = Environment.get_user_config_dir() +
-                      "/lightmediascannerd/db.sqlite3";
-            debug  ("Using default sqlite database location %s", db_path);
-        }
-
-        try {
-            this.lms_db = new LMS.Database (db_path);
+            this.lms_db = new LMS.Database ();
 
             this.add_child_container (new Artists ("artists", this, _("Artists"), this.lms_db));
             this.add_child_container (new Genres (this, this.lms_db));
