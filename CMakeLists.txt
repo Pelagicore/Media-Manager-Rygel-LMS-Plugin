@@ -48,12 +48,14 @@ SET (VALA_INPUT
      rygel-lms-category-container.vala
      rygel-lms-database.vala
      rygel-lms-dbus-interfaces.vala
+     rygel-lms-fs-browser.vala
      rygel-lms-genres.vala
      rygel-lms-genre.vala
      rygel-lms-playlists.vala
      rygel-lms-plugin-factory.vala
      rygel-lms-plugin.vala
      rygel-lms-root-container.vala
+     rygel-lms-sorted-tracks.vala
      rygel-lms-sql-function.vala
      rygel-lms-sql-operator.vala
      rygel-lms-tracks.vala)
@@ -76,7 +78,8 @@ ADD_CUSTOM_COMMAND (OUTPUT ${C_SOURCES}
                             ${VALA_PACKAGES}
                             --vapidir=${VAPIDIR}
                             --vapidir=${CMAKE_CURRENT_SOURCE_DIR}/vapi
-                            ${VALA_SOURCES})
+                            ${VALA_SOURCES}
+                    DEPENDS ${VALA_SOURCES})
 
 INCLUDE_DIRECTORIES (${PC_GLIB_INCLUDE_DIRS}
                      ${PC_RYGEL_SERVER_INCLUDE_DIRS}
