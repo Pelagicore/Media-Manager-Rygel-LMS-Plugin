@@ -156,12 +156,17 @@ public class Rygel.LMS.Albums : Rygel.LMS.CategoryContainer {
 
     protected override MediaObject? object_from_statement (Statement statement) {
         var id = "%d".printf (statement.column_int (0));
-        var album_art = File.new_for_path (statement.column_text (3));
+        var album_art_raw = statement.column_text (3);
+
+        var album_art = "";
+        if (album_art_raw != null)
+            album_art = File.new_for_path (album_art_raw).get_uri();
+
         LMS.Album album = new LMS.Album (id,
                                          this,
                                          statement.column_text (1),
                                          statement.column_text (2),
-                                         album_art.get_uri(),
+                                         album_art,
                                          this.lms_db);
         return album;
     }

@@ -43,6 +43,7 @@ public class Rygel.LMS.RootContainer : Rygel.SimpleContainer {
             this.add_child_container (new Albums (this, this.lms_db));
             this.add_child_container (new Playlists ("playlists", this, "Playlists"));
             this.add_child_container (new SortedTracks (this, this.lms_db));
+            this.add_child_container (new FSBrowser (this));
 
         } catch (DatabaseError e) {
             warning ("%s\n", e.message);
@@ -52,17 +53,4 @@ public class Rygel.LMS.RootContainer : Rygel.SimpleContainer {
                LMS notification API. */
         }
     }
-}
-
-public class Rygel.LMS.SortedTracks : Rygel.LMS.Tracks {
-    public SortedTracks ( MediaContainer parent,
-                       LMS.Database   lms_db,
-                       string         direction = "ASC") {
-        base ("tracks",
-              parent,
-              "All tracks",
-              lms_db,
-              " ORDER BY audios.title COLLATE NOCASE " + direction);
-    }
-
 }
