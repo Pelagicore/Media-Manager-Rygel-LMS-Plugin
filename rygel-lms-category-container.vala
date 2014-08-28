@@ -80,6 +80,7 @@ public abstract class Rygel.LMS.CategoryContainer : Rygel.MediaContainer,
                 break;
             case "upnp:artist":
                 column = "artist";
+
                 use_collation = true;
                 break;
             case "dc:creator":
@@ -418,6 +419,10 @@ public abstract class Rygel.LMS.CategoryContainer : Rygel.MediaContainer,
                 sql_added : sql_added,
                 sql_removed: sql_removed
                 );
+
+        /* tell object to keep a reference to the parent --
+         * otherwise parent is freed before object is serialized */
+        parent_ref = parent;
     }
 
     construct {
