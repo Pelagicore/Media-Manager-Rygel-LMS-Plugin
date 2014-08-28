@@ -38,7 +38,21 @@ public class Rygel.LMS.Tracks : Rygel.LMS.CategoryContainer {
         "ON audios.album_id = audio_albums.id " +
         "LEFT JOIN audio_genres " +
         "ON audios.genre_id = audio_genres.id " +
-        "WHERE audios.id = files.id" +
+        "WHERE dtime = 0 AND audios.id = files.id" +
+        "AND update_id > ? AND update_id <= ? " +
+        " %s;";
+
+    private static const string SQL_REMOVED_TEMPLATE =
+        "SELECT files.id, files.path, files.size, " +
+               "audios.title as title, audios.trackno, audios.length, audios.channels, audios.sampling_rate, audios.bitrate, audios.dlna_profile, audios.dlna_mime, " +
+               "audio_artists.name as artist, " +
+               "audio_albums.name " +
+        "FROM audios, files " +
+        "LEFT JOIN audio_artists " +
+        "ON audios.artist_id = audio_artists.id " +
+        "LEFT JOIN audio_albums " +
+        "ON audios.album_id = audio_albums.id " +
+        "WHERE dtime <> 0 AND audios.id = files.id AND audios.album_id = %s " +
         "AND update_id > ? AND update_id <= ? " +
         " %s;";
 
@@ -56,7 +70,7 @@ public class Rygel.LMS.Tracks : Rygel.LMS.CategoryContainer {
         "ON audios.album_id = audio_albums.id " +
         "LEFT JOIN audio_genres " +
         "ON audios.genre_id = audio_genres.id " +
-        "WHERE audios.id = files.id" +
+        "WHERE dtime = 0 AND audios.id = files.id" +
         " %s " +
         "LIMIT ? OFFSET ?;";
 
@@ -65,7 +79,7 @@ public class Rygel.LMS.Tracks : Rygel.LMS.CategoryContainer {
         "FROM audios, files " +
         "LEFT JOIN audio_genres " +
         "ON audios.genre_id = audio_genres.id " +
-        "WHERE audios.id = files.id "+
+        "WHERE dtime = 0 AND audios.id = files.id "+
         " %s " + ";";
 
     private static const string SQL_COUNT_WITH_FILTER_TEMPLATE =
@@ -77,7 +91,7 @@ public class Rygel.LMS.Tracks : Rygel.LMS.CategoryContainer {
         "ON audios.artist_id = audio_artists.id " +
         "LEFT JOIN audio_albums " +
         "ON audios.album_id = audio_albums.id " +
-        "WHERE audios.id = files.id;";
+        "WHERE dtime = 0 AND audios.id = files.id;";
 
     private static const string SQL_FIND_OBJECT=
         "SELECT files.id, files.path, files.size, " +
@@ -93,7 +107,7 @@ public class Rygel.LMS.Tracks : Rygel.LMS.CategoryContainer {
         "ON audios.album_id = audio_albums.id " +
         "LEFT JOIN audio_genres " +
         "ON audios.genre_id = audio_genres.id " +
-        "WHERE files.id = ? AND audios.id = files.id;";
+        "WHERE dtime = 0 AND files.id = ? AND audios.id = files.id;";
 
     private string guessDLNAMime (string path) {
         if (path.down().has_suffix ("ogg")) {
@@ -158,7 +172,7 @@ public class Rygel.LMS.Tracks : Rygel.LMS.CategoryContainer {
         return (SQL_ADDED_TEMPLATE.printf (db_id));
     }
     private static string get_sql_removed (string db_id) {
-        return "";//(SQL_REMOVED_TEMPLATE.printf (db_id));
+        return (SQL_REMOVED_TEMPLATE.printf (db_id));
     }
 
     private static string get_sql_all (string query_ext) {
