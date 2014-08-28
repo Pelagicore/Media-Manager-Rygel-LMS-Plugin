@@ -125,6 +125,11 @@ public class Rygel.LMS.Tracks : Rygel.LMS.CategoryContainer {
         var title = statement.column_text(3);
         var song_id = this.build_child_id (id);
         var song = new MusicItem (song_id, this, title);
+
+        /* tell object to keep a reference to the parent --
+         * otherwise parent is freed before object is serialized */
+        song.parent_ref = song.parent;
+
         song.ref_id = this.build_reference_id (id);
         song.size = statement.column_int(2);
         song.track_number = statement.column_int(4);
