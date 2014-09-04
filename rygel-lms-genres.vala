@@ -55,16 +55,12 @@ public class Rygel.LMS.Genres : Rygel.LMS.CategoryContainer {
                                         throws Error {
         MediaObject? object = null;
 
-        debug("I am: %s, find_object called on %s".printf(this.id, id));
         if (!id.has_prefix (this.child_prefix)) {
             /* can't match anything in this container */
             return null;
         }
 
-        debug ("I have %d children".printf(this.children.size));
-
         foreach (var child in this.children) {
-            debug ("Looking at %s".printf(child.id));
             if (child.id == id) {
                 return child;
             } if (id.has_prefix (child.id)) {
@@ -75,20 +71,9 @@ public class Rygel.LMS.Genres : Rygel.LMS.CategoryContainer {
     return object;
     }
 
-    public MediaObject? find_in_static_containers (string id) {
-        var index = id.last_index_of(":");
-        var child_name = id.slice(index+1, id.length);
-
-        if (child_name == "artists") {
-            debug ("Requesting artists container");
-            return this.children[0];
-        }
-        return null;
-    }
-
     public Genres ( MediaContainer parent,
                    LMS.Database   lms_db) {
-        base ("456",
+        base ("genres",
               parent,
               "Genres",
               lms_db,
