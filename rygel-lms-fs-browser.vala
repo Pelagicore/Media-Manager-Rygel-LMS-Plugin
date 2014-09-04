@@ -99,7 +99,7 @@ public class Rygel.LMS.FSBrowserContainer : Rygel.MediaContainer {
             MediaObject item = new AudioItem (path, this, name);
             item.mime_type = "";
             File f = File.new_for_path (path);
-            item.uris.add(f.get_uri());
+            item.add_uri(f.get_uri());
             children.add (item);
         }
     }
