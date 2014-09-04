@@ -67,14 +67,41 @@ public class Rygel.LMS.Genre : Rygel.SimpleContainer {
     }
 }
 
-public class Rygel.LMS.GenreArtists : Rygel.LMS.Artists {
+public class Rygel.LMS.GenreArtists : Rygel.LMS.CategoryContainer {
     protected string genreId = "";
+
+    private static const string SQL_ALL_TEMPLATE =
+        "SELECT audio_artists.id, audio_artists.name " +
+        "FROM audios " +
+        "LEFT JOIN audio_genres ON audios.genre_id = audio_genres.id " +
+        "LEFT JOIN audio_albums ON audios.album_id = audio_albums.id " +
+        "LEFT JOIN audio_artists ON audios.artist_id = audio_artists.id " +
+        "WHERE audio_genres.name = '%s' " + 
+        "LIMIT ? OFFSET ?;";
+
+    private static const string SQL_COUNT =
+        "SELECT COUNT(audio_artists.id) " +
+        "FROM audios " +
+        "LEFT JOIN audio_genres ON audios.genre_id = audio_genres.id " +
+        "LEFT JOIN audio_albums ON audios.album_id = audio_albums.id " +
+        "LEFT JOIN audio_artists ON audios.artist_id = audio_artists.id " +
+        "WHERE audio_genres.name = '%s';";
+
+    // Since we have the ID, we already know the genre is correct.
+    private static const string SQL_FIND_OBJECT =
+        "SELECT audio_artists.id, audio_artists.name " +
+        "FROM audio_artists " +
+        "WHERE audio_artists.id = ?;";
 
     protected override MediaObject? object_from_statement (Statement statement) {
         var db_id = "%d".printf (statement.column_int (0));
         var title = statement.column_text (1);
 
-        return new LMS.GenreArtist (db_id, this, title, this.lms_db, this.genreId);
+        return new LMS.Artist (db_id, this, title, this.lms_db);
+    }
+
+    private static string get_sql_all (string genre) {
+        return SQL_ALL_TEMPLATE.printf(genre);
     }
 
     public GenreArtists (string id,
@@ -85,9 +112,12 @@ public class Rygel.LMS.GenreArtists : Rygel.LMS.Artists {
         base (id,
               parent,
               title,
-              lms_db);
-        this.genreId = genreId;
-
+              lms_db,
+              get_sql_all (genreId),
+              GenreArtists.SQL_FIND_OBJECT,
+              GenreArtists.SQL_COUNT,
+              null,
+              null);
     }
 }
 
