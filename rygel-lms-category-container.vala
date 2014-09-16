@@ -291,17 +291,45 @@ public abstract class Rygel.LMS.CategoryContainer : Rygel.MediaContainer,
         }
     }
 
+    private string get_sql_sort_string (string sort_criteria) {
+        string[] criteria = sort_criteria.split (",");
+        foreach (var c in criteria) {
+            try {
+                var sql_field = map_operand_to_column (c.slice(1, c.length));
+                sql_field += " COLLATE NOCASE ";
+                if (c.has_prefix("+"))
+                    return sql_field + " ASC";
+                else
+                    return sql_field + " DESC";
+            } catch (Error e) {
+                warning ("Error building sort string: %s", e.message);
+            }
+        }
+
+        return "";
+    }
+
     public async override MediaObjects? get_children (uint offset,
                                                       uint max_count,
                                                       string sort_criteria,
                                                       Cancellable? cancellable)
                                         throws Error {
+        debug ("In rygel-lms-category-container.vala:get_children");
         MediaObjects retval = new MediaObjects ();
+
+        string parsed_sort_criteria = get_sql_sort_string (sort_criteria);
+
+        this.stmt_all = this.lms_db.prepare (this.sql_all.printf(parsed_sort_criteria));
+
+        debug (("Statement: %s\n" +
+               "Offset: %d\n" +
+               "Max count: %d\n" +
+               "Sort criteria: %s").printf(this.sql_all, offset, max_count, parsed_sort_criteria));
 
         Database.get_children_init (this.stmt_all,
                                     offset,
                                     max_count,
-                                    sort_criteria);
+                                    parsed_sort_criteria);
         while (Database.get_children_step (this.stmt_all)) {
             debug("Adding object");
             retval.add (this.object_from_statement (this.stmt_all));
@@ -435,7 +463,7 @@ public abstract class Rygel.LMS.CategoryContainer : Rygel.MediaContainer,
 
         try {
             debug ("SQL find obj: %s".printf(this.sql_find_object));
-            this.stmt_all = this.lms_db.prepare (this.sql_all);
+            this.stmt_all = this.lms_db.prepare (this.sql_all.printf("id"));
             this.stmt_find_object = this.lms_db.prepare (this.sql_find_object);
             var stmt_count = this.lms_db.prepare (this.sql_count);
 
