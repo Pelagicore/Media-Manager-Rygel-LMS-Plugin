@@ -46,6 +46,7 @@ public abstract class Rygel.LMS.CategoryContainer : Rygel.MediaContainer,
     public string sql_count { get; construct; }
     public string sql_added { get; construct; }
     public string sql_removed { get; construct; }
+    public string[] supported_sort_fields { get; construct; }
 
     protected Statement stmt_all;
     protected Statement stmt_find_object;
@@ -295,12 +296,27 @@ public abstract class Rygel.LMS.CategoryContainer : Rygel.MediaContainer,
         string[] criteria = sort_criteria.split (",");
         foreach (var c in criteria) {
             try {
+                var sql_sort_query = "ORDER BY ";
                 var sql_field = map_operand_to_column (c.slice(1, c.length));
-                sql_field += " COLLATE NOCASE ";
+
+                if (!(sql_field in supported_sort_fields)) {
+                    debug (sql_field + " is not supported by this container");
+                    debug ("Supported fields are:");
+                    foreach (var f in supported_sort_fields)
+                        debug (f);
+
+                    continue;
+                }
+
+                sql_sort_query += sql_field;
+                sql_sort_query += " COLLATE NOCASE ";
+
                 if (c.has_prefix("+"))
-                    return sql_field + " ASC";
+                    sql_sort_query += " ASC";
                 else
-                    return sql_field + " DESC";
+                    sql_sort_query += " DESC";
+
+                return sql_sort_query;
             } catch (Error e) {
                 warning ("Error building sort string: %s", e.message);
             }
@@ -324,14 +340,13 @@ public abstract class Rygel.LMS.CategoryContainer : Rygel.MediaContainer,
         debug (("Statement: %s\n" +
                "Offset: %d\n" +
                "Max count: %d\n" +
-               "Sort criteria: %s").printf(this.sql_all, offset, max_count, parsed_sort_criteria));
+               "Sort criteria: %s").printf(this.sql_all.printf(parsed_sort_criteria), offset, max_count, parsed_sort_criteria));
 
         Database.get_children_init (this.stmt_all,
                                     offset,
                                     max_count,
                                     parsed_sort_criteria);
         while (Database.get_children_step (this.stmt_all)) {
-            debug("Adding object");
             retval.add (this.object_from_statement (this.stmt_all));
         }
 
@@ -410,16 +425,21 @@ public abstract class Rygel.LMS.CategoryContainer : Rygel.MediaContainer,
                                                        old_id,
                                                        new_id);
             while (Database.get_children_step (this.stmt_added)) {
-                this.add_child_tracked.begin(this.object_from_statement (this.stmt_added));
+                var obj = this.object_from_statement (this.stmt_added);
+                this.add_child_tracked.begin(obj);
+                this.container_updated (this, obj, Rygel.ObjectEventType.ADDED, false);
+                debug ("Added item");
             }
 
             Database.get_children_with_update_id_init (this.stmt_removed,
                                                        old_id,
                                                        new_id);
             while (Database.get_children_step (this.stmt_removed)) {
-                this.remove_child_tracked.begin(this.object_from_statement (this.stmt_removed));
+                var obj = this.object_from_statement (this.stmt_removed);
+                this.remove_child_tracked.begin(obj);
+                this.container_updated (this, obj, Rygel.ObjectEventType.DELETED, false);
+                debug ("Removed item");
             }
-
         } catch (DatabaseError e) {
             warning ("Can't perform container update: %s", e.message);
         }
@@ -435,7 +455,8 @@ public abstract class Rygel.LMS.CategoryContainer : Rygel.MediaContainer,
                               string sql_find_object,
                               string sql_count,
                               string? sql_added,
-                              string? sql_removed) {
+                              string? sql_removed,
+                              string[] supported_sort_fields) {
         Object (id : "%s:%s".printf (parent.id, db_id),
                 db_id : db_id,
                 parent : parent,
@@ -445,7 +466,8 @@ public abstract class Rygel.LMS.CategoryContainer : Rygel.MediaContainer,
                 sql_find_object : sql_find_object,
                 sql_count : sql_count,
                 sql_added : sql_added,
-                sql_removed: sql_removed
+                sql_removed: sql_removed,
+                supported_sort_fields : supported_sort_fields
                 );
 
         /* tell object to keep a reference to the parent --
@@ -463,7 +485,6 @@ public abstract class Rygel.LMS.CategoryContainer : Rygel.MediaContainer,
 
         try {
             debug ("SQL find obj: %s".printf(this.sql_find_object));
-            this.stmt_all = this.lms_db.prepare (this.sql_all.printf("id"));
             this.stmt_find_object = this.lms_db.prepare (this.sql_find_object);
             var stmt_count = this.lms_db.prepare (this.sql_count);
 
@@ -475,7 +496,10 @@ public abstract class Rygel.LMS.CategoryContainer : Rygel.MediaContainer,
             if (this.sql_added != null && this.sql_removed != null) {
                 this.stmt_added = this.lms_db.prepare (this.sql_added);
                 this.stmt_removed = this.lms_db.prepare (this.sql_removed);
+                debug ("Connecting DB update signal");
                 lms_db.db_updated.connect(this.on_db_updated);
+            } else {
+                debug ("Not connecting DB update signal");
             }
         } catch (DatabaseError e) {
             warning ("Container %s: %s", this.title, e.message);

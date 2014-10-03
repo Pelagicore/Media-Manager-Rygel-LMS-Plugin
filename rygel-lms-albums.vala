@@ -30,7 +30,8 @@ public class Rygel.LMS.Albums : Rygel.LMS.CategoryContainer {
         "FROM audio_albums " +
         "LEFT JOIN audio_artists " +
         "ON audio_albums.artist_id = audio_artists.id " +
-        "ORDER BY %s LIMIT ? OFFSET ?;";
+        "%s " +
+        "LIMIT ? OFFSET ?;";
 
     private static const string SQL_ALL_WITH_FILTER_TEMPLATE =
         "SELECT audio_albums.id, audio_albums.name as title, " +
@@ -182,6 +183,7 @@ public class Rygel.LMS.Albums : Rygel.LMS.CategoryContainer {
               Albums.SQL_FIND_OBJECT,
               Albums.SQL_COUNT,
               null,
-              null);
+              null,
+              {"id", "title", "artist"});
     }
 }
