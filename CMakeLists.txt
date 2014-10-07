@@ -35,8 +35,6 @@ SET (VALA_FLAGS
 
 SET (VALAC valac)
 
-SET (VAPIDIR /home/jonatan/rygel_install_new/share/vala/vapi)
-
 SET (CONFIG_H
      -DGETTEXT_PACKAGE="rygel")
 
@@ -75,7 +73,6 @@ ADD_CUSTOM_COMMAND (OUTPUT ${C_SOURCES}
                     COMMAND ${VALAC}
                             ${VALA_FLAGS}
                             ${VALA_PACKAGES}
-                            --vapidir=${VAPIDIR}
                             --vapidir=${CMAKE_CURRENT_SOURCE_DIR}/vapi
                             ${VALA_SOURCES}
                     DEPENDS ${VALA_SOURCES})
