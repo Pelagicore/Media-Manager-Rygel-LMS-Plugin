@@ -53,7 +53,6 @@ SET (VALA_INPUT
      rygel-lms-plugin-factory.vala
      rygel-lms-plugin.vala
      rygel-lms-root-container.vala
-     rygel-lms-sorted-tracks.vala
      rygel-lms-sql-function.vala
      rygel-lms-sql-operator.vala
      rygel-lms-tracks.vala)

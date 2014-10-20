@@ -25,8 +25,9 @@ using Sqlite;
 
 public class Rygel.LMS.Artists : Rygel.LMS.CategoryContainer {
     private static const string SQL_ALL =
-        "SELECT audio_artists.id, audio_artists.name " +
+        "SELECT audio_artists.id as id, audio_artists.name as artist " +
         "FROM audio_artists " +
+        "%s " +
         "LIMIT ? OFFSET ?;";
 
     private static const string SQL_COUNT =
@@ -57,6 +58,7 @@ public class Rygel.LMS.Artists : Rygel.LMS.CategoryContainer {
               Artists.SQL_FIND_OBJECT,
               Artists.SQL_COUNT,
               null,
-              null);
+              null,
+              {"id", "artist"});
     }
 }

@@ -27,7 +27,7 @@ public class Rygel.LMS.Artist : Rygel.LMS.CategoryContainer {
     private string artist_name = "Unknown";
 
     private static const string SQL_ALL_TEMPLATE =
-        "SELECT audio_albums.id, audio_albums.name " +
+        "SELECT audio_albums.id as id, audio_albums.name as album " +
         "FROM audio_albums " +
         "WHERE audio_albums.artist_id = %s " +
         "LIMIT ? OFFSET ?;";
@@ -71,7 +71,8 @@ public class Rygel.LMS.Artist : Rygel.LMS.CategoryContainer {
               get_sql_find_object (id),
               get_sql_count (id),
               null,
-              null);
+              null,
+              {"id", "album"});
 
         artist_name = title;
         upnp_class = MediaContainer.MUSIC_ARTIST;

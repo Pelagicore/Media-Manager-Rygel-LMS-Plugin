@@ -42,7 +42,7 @@ public class Rygel.LMS.RootContainer : Rygel.SimpleContainer {
             this.add_child_container (new Genres (this, this.lms_db));
             this.add_child_container (new Albums (this, this.lms_db));
             this.add_child_container (new Playlists ("playlists", this, "Playlists"));
-            this.add_child_container (new SortedTracks (this, this.lms_db));
+            this.add_child_container (new Tracks ("tracks", this, "All tracks", this.lms_db, ""));
             this.add_child_container (new FSBrowserContainer ("/", this, "/"));
 
         } catch (DatabaseError e) {

@@ -38,30 +38,20 @@ public class Rygel.LMS.Tracks : Rygel.LMS.CategoryContainer {
         "ON audios.album_id = audio_albums.id " +
         "LEFT JOIN audio_genres " +
         "ON audios.genre_id = audio_genres.id " +
-        "WHERE dtime = 0 AND audios.id = files.id" +
+        "WHERE dtime = 0 AND audios.id = files.id " +
         "AND update_id > ? AND update_id <= ? " +
         " %s;";
 
     private static const string SQL_REMOVED_TEMPLATE =
-        "SELECT files.id, files.path, files.size, " +
-               "audios.title as title, audios.trackno, audios.length, audios.channels, audios.sampling_rate, audios.bitrate, audios.dlna_profile, audios.dlna_mime, " +
-               "audio_artists.name as artist, " +
-               "audio_albums.name " +
-        "FROM audios, files " +
-        "LEFT JOIN audio_artists " +
-        "ON audios.artist_id = audio_artists.id " +
-        "LEFT JOIN audio_albums " +
-        "ON audios.album_id = audio_albums.id " +
-        "WHERE dtime <> 0 AND audios.id = files.id AND audios.album_id = %s " +
-        "AND update_id > ? AND update_id <= ? " +
-        " %s;";
+        "SELECT files.id FROM files WHERE dtime <> 0 " +
+        "AND update_id > ? AND update_id <= ?;";
 
     private static const string SQL_ALL_TEMPLATE =
-        "SELECT files.id, files.path, files.size, " +
+        "SELECT files.id as id, files.path, files.size, " +
                "audios.title as title, audios.trackno, audios.length, audios.channels, audios.sampling_rate, audios.bitrate, audios.dlna_profile, audios.dlna_mime, " +
                "audio_artists.name as artist, " +
-               "audio_albums.name, " +
-               "audio_genres.name, " +
+               "audio_albums.name as album, " +
+               "audio_genres.name as genre, " +
                "audio_albums.album_art_url " +
         "FROM audios, files " +
         "LEFT JOIN audio_artists " +
@@ -71,8 +61,7 @@ public class Rygel.LMS.Tracks : Rygel.LMS.CategoryContainer {
         "LEFT JOIN audio_genres " +
         "ON audios.genre_id = audio_genres.id " +
         "WHERE dtime = 0 AND audios.id = files.id" +
-        " %s " +
-        "LIMIT ? OFFSET ?;";
+        " %s ";
 
     private static const string SQL_COUNT_TEMPLATE =
         "SELECT COUNT(audios.id) " +
@@ -165,23 +154,44 @@ public class Rygel.LMS.Tracks : Rygel.LMS.CategoryContainer {
         File file = File.new_for_path (path);
         song.add_uri (file.get_uri ());
 
+ //       debug ("Built track:");
+ //       debug ("    id:         %d", id);
+ //       debug ("    path:       %s", path);
+ //       debug ("    mime:       %s", mime_type);
+ //       debug ("    album art:  %s", album_art_path);
+ //       debug ("    title:      %s", title);
+ //       debug ("    song id:    %s", song_id);
+ //       debug ("    ref id:     %s", song.ref_id);
+ //       debug ("    size:       %" + int64.FORMAT, song.size);
+ //       debug ("    track num:  %d", song.track_number);
+ //       debug ("    duration:   %ld", song.duration);
+ //       debug ("    channels    %d", song.channels);
+ //       debug ("    sample frq: %d", song.sample_freq);
+ //       debug ("    bitrate:    %d", song.bitrate);
+ //       debug ("    dlna prof:  %s", song.dlna_profile);
+ //       debug ("    artist:     %s", song.artist);
+ //       debug ("    album:      %s", song.album);
+ //       debug ("    genre:      %s", song.genre);
+ //       debug ("    path:       %s", file.get_uri());
+
         return song;
     }
 
-    private static string get_sql_added (string db_id) {
-        return (SQL_ADDED_TEMPLATE.printf (db_id));
+    private static string get_sql_added (string query_ext) {
+        return (SQL_ADDED_TEMPLATE.printf (query_ext));
     }
-    private static string get_sql_removed (string db_id) {
-        return (SQL_REMOVED_TEMPLATE.printf (db_id));
+    private static string get_sql_removed () {
+        return (SQL_REMOVED_TEMPLATE);
     }
 
     private static string get_sql_all (string query_ext) {
-        debug ("QUERY: %s", SQL_ALL_TEMPLATE.printf (query_ext));
-        return (SQL_ALL_TEMPLATE.printf (query_ext));
+        //debug ("QUERY: %s", SQL_ALL_TEMPLATE.printf (query_ext));
+        return (SQL_ALL_TEMPLATE.printf (query_ext) +
+        "%s LIMIT ? OFFSET ?;");
     }
 
     private static string get_sql_count (string query_ext = "") {
-        debug ("QUERY: %s", SQL_ALL_TEMPLATE.printf (query_ext));
+        //debug ("QUERY: %s", SQL_ALL_TEMPLATE.printf (query_ext));
         return (SQL_COUNT_TEMPLATE.printf (query_ext));
     }
 
@@ -213,8 +223,9 @@ public class Rygel.LMS.Tracks : Rygel.LMS.CategoryContainer {
               get_sql_all (query_ext),
               SQL_FIND_OBJECT,
               get_sql_count (query_ext),
-              get_sql_added (id),
-              null);
+              get_sql_added (query_ext),
+              get_sql_removed (),
+              {"artist", "album", "genre", "title"});
 
     }
 }

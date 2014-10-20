@@ -71,13 +71,12 @@ public class Rygel.LMS.GenreArtists : Rygel.LMS.CategoryContainer {
     protected string genreId = "";
 
     private static const string SQL_ALL_TEMPLATE =
-        "SELECT audio_artists.id, audio_artists.name " +
+        "SELECT audio_artists.id as id, audio_artists.name as artist " +
         "FROM audios " +
         "LEFT JOIN audio_genres ON audios.genre_id = audio_genres.id " +
         "LEFT JOIN audio_albums ON audios.album_id = audio_albums.id " +
         "LEFT JOIN audio_artists ON audios.artist_id = audio_artists.id " +
-        "WHERE audio_genres.name = '%s' " + 
-        "LIMIT ? OFFSET ?;";
+        "WHERE audio_genres.name = '%s' ";
 
     private static const string SQL_COUNT =
         "SELECT COUNT(audio_artists.id) " +
@@ -101,7 +100,7 @@ public class Rygel.LMS.GenreArtists : Rygel.LMS.CategoryContainer {
     }
 
     private static string get_sql_all (string genre) {
-        return SQL_ALL_TEMPLATE.printf(genre);
+        return SQL_ALL_TEMPLATE.printf(genre) + " %s LIMIT ? OFFSET ?;";
     }
 
     public GenreArtists (string id,
@@ -117,7 +116,8 @@ public class Rygel.LMS.GenreArtists : Rygel.LMS.CategoryContainer {
               GenreArtists.SQL_FIND_OBJECT,
               GenreArtists.SQL_COUNT,
               null,
-              null);
+              null,
+              {"id", "artist"});
     }
 }
 
