@@ -27,7 +27,7 @@ public class Rygel.LMS.Artist : Rygel.LMS.CategoryContainer {
     private string artist_name = "Unknown";
 
     private static const string SQL_ALL_TEMPLATE =
-        "SELECT audio_albums.id as id, audio_albums.name as album " +
+        "SELECT audio_albums.id as id, audio_albums.name as album, audio_albums.album_art_url as albumart " +
         "FROM audio_albums " +
         "WHERE audio_albums.artist_id = %s " +
         "LIMIT ? OFFSET ?;";
@@ -38,7 +38,7 @@ public class Rygel.LMS.Artist : Rygel.LMS.CategoryContainer {
         "WHERE audio_albums.artist_id = %s";
 
     private static const string SQL_FIND_OBJECT_TEMPLATE =
-        "SELECT audio_albums.id, audio_albums.name " +
+        "SELECT audio_albums.id, audio_albums.name, audio_albums.album_art_url as albumart " +
         "FROM audio_albums " +
         "WHERE audio_albums.id = ? AND audio_albums.artist_id = %s;";
 
@@ -55,7 +55,8 @@ public class Rygel.LMS.Artist : Rygel.LMS.CategoryContainer {
     protected override MediaObject? object_from_statement (Statement statement) {
         var db_id = "%d".printf (statement.column_int (0));
         var title = statement.column_text (1);
-        return new LMS.Album (db_id, this, title, artist_name, "rygellms-artist.vala:58", this.lms_db);
+        var artwork = statement.column_text(2);
+        return new LMS.Album (db_id, this, title, artist_name, artwork, this.lms_db);
     }
 
     public Artist (string         id,

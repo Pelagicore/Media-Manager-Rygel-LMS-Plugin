@@ -25,7 +25,7 @@ public class Rygel.LMS.Album : Rygel.LMS.Tracks {
                   MediaContainer parent,
                   string         title,
                   string         artist_,
-                  string         album_art_uri_,
+                  string?        album_art_uri_,
                   LMS.Database   lms_db) {
         base (id,
               parent,
